@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { getId, log } from './help'
-import './index.css'
+import '../css/index.css'
 
 const PREVIEW_MAX_SIZE = 2048.0
 const PREVIEW_ARTBOARD_PADDING = 60.0
@@ -22,12 +22,14 @@ function handleSketch (file) {
   reader.readAsArrayBuffer(file)
   reader.onload = (e) => {
     JSZip.loadAsync(e.target.result).then((zip) => {
-      log(zip)
       zip.forEach(function (relativePath, zipEntry) {
         if (relativePath === 'previews/preview.png') {
           zipEntry.async('base64').then(function success (content) {
-            bg.style.backgroundImage = 'data:image/png;base64,' + content
+            sketchObject.imageData = 'data:image/png;base64,' + content
+            bg.style.backgroundImage = `url(${sketchObject.imageData})`
+
             const image = new Image()
+
             image.onload = function () {
               sketchObject.imageWidth = image.width
               sketchObject.imageHeight = image.height
@@ -37,6 +39,7 @@ function handleSketch (file) {
                 sketchObject.artboardWidth = (PREVIEW_MAX_SIZE - (PREVIEW_ARTBOARD_PADDING * (sketchObject.artboards.length - 1))) / sketchObject.artboards.length
               }
             }
+            // getId('image').src = sketchObject.imageData
             image.src = sketchObject.imageData
           }, function error (e) {
             console.log(e)
@@ -50,11 +53,11 @@ function handleSketch (file) {
               // 按照sketch文件解析的顺序来,第一层为 pages，第二层为 symbols，不支持多层
               sketchObject.symbols = page.layers
             } else {
-              if (page[0]['_class'].includes('symbolMaster')) {
-                sketchObject.pages = page.layers
-              } else {
-                throw new Error('解析失败，请您按照正确 sketch 文件摆放规则')
-              }
+              // if (page[0]['_class'].includes('symbolMaster')) {
+              sketchObject.pages = page.layers
+              // } else {
+              //   throw new Error('解析失败，请您按照正确 sketch 文件摆放规则')
+              // }
             }
 
             if (sketchObject.imageWidth && sketchObject.artboards && sketchObject.imageWidth >= PREVIEW_MAX_SIZE) {

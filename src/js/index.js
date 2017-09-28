@@ -1,5 +1,5 @@
 import JSZip from 'jszip'
-import { getId, log } from './help'
+import { getId, log, mapIterator } from './help'
 import '../css/index.css'
 
 const PREVIEW_MAX_SIZE = 2048.0
@@ -50,14 +50,13 @@ function handleSketch (file) {
           zipEntry.async('string').then(function success (content) {
             const page = JSON.parse(content)
             if (i == 1) {
-              // 按照sketch文件解析的顺序来,第一层为 pages，第二层为 symbols，不支持多层
               sketchObject.symbols = page.layers
+              let result = mapIterator(page.layers)
+              window.resultlayers = result
             } else {
-              // if (page[0]['_class'].includes('symbolMaster')) {
               sketchObject.pages = page.layers
-              // } else {
-              //   throw new Error('解析失败，请您按照正确 sketch 文件摆放规则')
-              // }
+              let result = mapIterator(page.layers)
+              window.resultPage = result
             }
 
             if (sketchObject.imageWidth && sketchObject.artboards && sketchObject.imageWidth >= PREVIEW_MAX_SIZE) {

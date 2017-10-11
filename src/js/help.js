@@ -15,7 +15,8 @@ const iterator = (page, callback) => {
   const { layers } = page
   let stack
   if (!layers) {
-    return resultArr.push(callback(page))
+    resultArr.push(callback(page))
+    return resultArr
   }
   // the default data was reverse, create new Array and make it positive
   stack = [...layers].reverse()
@@ -42,7 +43,7 @@ const iterator = (page, callback) => {
 const getAttributes = (page) => {
   const { frame, name, resizingConstraint, backgroundColor, style, symbolID } = page
   const cslassType = page['_class']
-  let basicResult = Object.create(null)
+  let basicResult = {}
   if (symbolID) {
     Object.assign(basicResult, { symbolID })
   }
@@ -81,13 +82,11 @@ const getAttributes = (page) => {
       Object.assign(basicResult, { fillColors })
     }
   }
-  Object.assign(basicResult, {
+  return Object.assign(basicResult, {
     ...getFrame(frame),
     resizingConstraint,
     name
   })
-
-  return basicResult
 
 }
 
@@ -100,8 +99,33 @@ const getRgbaColor = (backgroundColor) => {
   const makeNormal = (r) => Math.round(r * 255)
   return `rgba(${makeNormal(red)}, ${makeNormal(green)}, ${makeNormal(blue)}, ${alpha})`
 }
+const renderPreview = (layers) => {
+  let fragment = document.createDocumentFragment()
+  layers.forEach(layer => {
+    for (v of layer) {
+      for (key of v) {
+        console.log(key)
+      }
+    }
+  })
+  document.body.appendChild(fragment)
+}
+let Preview = (layers) => {
+  let fragment = document.createDocumentFragment()
+  layers.forEach(layer => {
+    for (let k in Object.values(layer)[0][0]) {
+      let tempNode = document.createElement('div')
+      // tempNode.style[k] = k
+      tempNode.innerHTML = k
+      fragment.appendChild(tempNode)
+    }
+  })
+  document.body.appendChild(fragment)
+}
+
 export {
   getId,
   log,
-  mapIterator
+  mapIterator,
+  renderPreview
 }

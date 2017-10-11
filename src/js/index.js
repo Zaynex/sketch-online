@@ -1,5 +1,5 @@
 import JSZip from 'jszip'
-import { getId, log, mapIterator } from './help'
+import { getId, log, mapIterator, renderPreview } from './help'
 import '../css/index.css'
 
 const PREVIEW_MAX_SIZE = 2048.0
@@ -53,10 +53,12 @@ function handleSketch (file) {
               sketchObject.symbols = page.layers
               let result = mapIterator(page.layers)
               window.resultlayers = result
+              // renderPreview(result)
             } else {
               sketchObject.pages = page.layers
               let result = mapIterator(page.layers)
               window.resultPage = result
+              // renderPreview(result)
             }
 
             if (sketchObject.imageWidth && sketchObject.artboards && sketchObject.imageWidth >= PREVIEW_MAX_SIZE) {
